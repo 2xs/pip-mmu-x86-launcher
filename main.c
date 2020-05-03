@@ -113,7 +113,6 @@ static uint32_t bootstrapPartition(uint32_t base, uint32_t size, uint32_t laddr)
 	context->eflags   = 0x202;
 	context->regs.ebp = STACK_TOP_ADDR + PAGE_SIZE;
 	context->regs.esp = context->regs.ebp - sizeof(user_ctx_t);
-	context->regs.ebx = 0;
 	context->valid    = 1;
 	printf("Done.\n");
 

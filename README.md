@@ -5,6 +5,8 @@ transfer the execution flow from the root partition to a child partition.
 
 ## Project structure
 
+The project structure is the following:
+
 ```
 .
 ├── 0boot.S
@@ -22,9 +24,15 @@ transfer the execution flow from the root partition to a child partition.
 └── README.md
 ```
 
+The root partition code can be found at the root of the project in the `0boot.S`
+and `main.c` files.
+
+The child partition code can be found in the `boot.S` and `main.c` files in the
+`minimal` directory.
+
 ## Useful commands for debugging
 
-### Disassembling a flat binary
+### Disassembling a flat binary file
 
 You can use the following command in order to disassemble a flat binary file :
 
@@ -32,9 +40,9 @@ You can use the following command in order to disassemble a flat binary file :
 $ objdump -b binary -m i386 --adjust-vma=0x700000 -D binary.bin | less
 ```
 
-### GDB
+### Step into a flat binary file with GDB
 
-You can stepped into a flat binary file using the following command:
+You can step into a flat binary file using the following command:
 
 ```
 (gdb) stepi

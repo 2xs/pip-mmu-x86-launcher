@@ -40,12 +40,14 @@
 
 #include "launcher.h"
 
+/*
+ * The minimal partition descriptor.
+ */
 uint32_t pd;
 
 /*
  * External symbols from link.ld file.
  */
-
 extern void *_minimal_addr_start;
 extern void *_minimal_addr_end;
 
@@ -129,7 +131,7 @@ static uint32_t bootstrapPartition(uint32_t base, uint32_t size, uint32_t laddr)
 	printf("Done.\n");
 
 	printf("Saving the context in the VIDT... ");
-	vidtPage[0] = (user_ctx_t *) (STACK_TOP_ADDR + PAGE_SIZE - sizeof(user_ctx_t));
+	vidtPage[0] = (user_ctx_t *) context->regs.esp;
 	printf("Done.\n");
 
 	printf("Mapping the VIDT page... ");

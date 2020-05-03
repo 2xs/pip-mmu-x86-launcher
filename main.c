@@ -76,7 +76,6 @@ static uint32_t bootstrapPartition(uint32_t base, uint32_t size, uint32_t laddr)
 {
 	uint32_t rtospd, rtossh1, rtossh2, rtossh3, stackPage, offset;
 	user_ctx_t *context, **vidtPage;
-	void *stack;
 
 	printf("Creating a new partition... ");
 	pd      = (uint32_t) Pip_AllocPage();
@@ -108,7 +107,7 @@ static uint32_t bootstrapPartition(uint32_t base, uint32_t size, uint32_t laddr)
 	printf("Done.\n");
 
 	printf("Creating a new context for the partition... ");
-	stack = context   = (user_ctx_t *) (stackPage + PAGE_SIZE - sizeof(user_ctx_t));
+	context           = (user_ctx_t *) (stackPage + PAGE_SIZE - sizeof(user_ctx_t));
 	context->valid    = 0;
 	context->eip      = laddr;
 	context->pipflags = 0;
@@ -187,7 +186,7 @@ void main(pip_fpinfo* bootinfo)
 	{
 		PANIC();
 	}
-	printf("Partition successfully bootstraped...\n");
+	printf("Minimal partition successfully bootstraped...\n");
 
 	printf("It's all good. Now switching to the minimal partition...\n");
 	for (;;)

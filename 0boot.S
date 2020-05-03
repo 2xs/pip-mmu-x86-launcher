@@ -31,19 +31,10 @@
 /*  knowledge of the CeCILL license and that you accept its terms.             */
 /*******************************************************************************/
 
-/*#include <pip/compat.h>*/
-
 .section .text
-
-.extern Pip_Set_Int_State
 .extern main
 
 boot:
-	/* Disable interrupts */
-	push  $0x0
-	lcall $0x98,$0x0
-	add   $0x4,%esp
-	/* Call main */
 	push  %ebx
 	call  main
 loop:

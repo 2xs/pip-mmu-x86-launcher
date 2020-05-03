@@ -31,7 +31,7 @@
 /*  knowledge of the CeCILL license and that you accept its terms.             */
 /*******************************************************************************/
 
-OUTPUT_FORMAT("binary")
+OUTPUT_FORMAT(binary)
 ENTRY(main)
 SECTIONS
 {
@@ -40,22 +40,22 @@ SECTIONS
 		*(.text)
 		. = ALIGN(4K);
 	}
-	.minimal : ALIGN(4K)
+	.minimal :
 	{
 		_minimal_addr_start = . ;
 		*(.minimal)
-		. = ALIGN(0x40000); /* 4K*64 */
+		. = ALIGN(4K*64);
 		_minimal_addr_end = . ;
-	} = 0x00000000
-	.data :
-	{
-		*(.data)
-		*(.rodata)
-		. = ALIGN(4K);
 	}
 	.bss :
 	{
 		*(.bss)
+		. = ALIGN(4K);
+	}
+	.data :
+	{
+		*(.data)
+		*(.rodata)
 		. = ALIGN(4K);
 	}
 }

@@ -32,12 +32,11 @@
 /*******************************************************************************/
 
 .section .text
-
 .global boot
 .extern main
 
 boot:
-	/* Call main */
+	sub   $4,%esp
 	call  main
 loop:
 	jmp   loop

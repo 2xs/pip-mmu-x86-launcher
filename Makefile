@@ -45,7 +45,6 @@ CFLAGS  += -I$(LIBPIP)/include/
 CFLAGS  += -I$(LIBPIP)/arch/x86/include/
 
 ASFLAGS  = $(CFLAGS)
-
 CFLAGS  += $(MKARGS)
 
 LDFLAGS  = -L$(LIBPIP)/lib
@@ -53,7 +52,6 @@ LDFLAGS += -melf_i386
 
 CSOURCES   = $(wildcard *.c)
 CSOURCES  += $(wildcard bootstrap/*.c)
-
 ASSOURCES  = $(wildcard *.S)
 
 ASOBJ = $(ASSOURCES:.S=.o)

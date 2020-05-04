@@ -42,7 +42,7 @@ $ objdump -b binary -m i386 --adjust-vma=0x700000 -D binary.bin | less
 
 ### Step into a flat binary file with GDB
 
-You can step into a flat binary file using the following command:
+You can step into a flat binary file with GDB using the following command:
 
 ```
 (gdb) stepi

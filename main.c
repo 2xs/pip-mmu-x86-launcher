@@ -92,9 +92,9 @@ static void printBootInfo(pip_fpinfo* bootinfo)
 
 /*!
  * \fn static void bootstrapPartition(uint32_t base, uint32_t size, uint32_t laddr)
- * \brief Bootstraping a new partition
- * \param base The start address of the partition
- * \param size The size of the partition
+ * \brief Bootstraping a new child partition at a specific address
+ * \param base The start address of the first memory page
+ * \param size The size of the partition to map
  * \param laddr The address where to load the partition
  * \return 1 in the case of a success, less than 0 in the case of an error
  */
@@ -198,7 +198,7 @@ void main(pip_fpinfo* bootinfo)
 	printf("Done.\n");
 
 	printf("Bootstraping the minimal partition... ");
-	if ((ret = bootstrapPartition(minimal_start, minimal_end - minimal_start, 0x700000)) < 0)
+	if ((ret = bootstrapPartition(minimal_start, minimal_end - minimal_start, 0x700000)) < 1)
 	{
 		switch (ret)
 		{
@@ -213,6 +213,9 @@ void main(pip_fpinfo* bootinfo)
 				break;
 			case MAP_VIDT_PAGE_FAILED:
 				printf("Failed to map VIDT page.\n");
+				break;
+			default:
+				printf("Unknown error code...\n");
 		}
 		PANIC();
 	}

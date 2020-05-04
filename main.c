@@ -44,25 +44,25 @@
  * \def CREATE_PARTITION_FAILED
  * \brief Create partition error code
  */
-#define CREATE_PARTITION_FAILED	-1
+#define CREATE_PARTITION_FAILED	 0
 
 /*!
  * \def MAP_CHILD_PAGE_FAILED
  * \brief Map child page error code
  */
-#define MAP_CHILD_PAGE_FAILED	-2
+#define MAP_CHILD_PAGE_FAILED	-1
 
 /*!
  * \def MAP_STACK_PAGE_FAILED
  * \brief Map stack page error code
  */
-#define MAP_STACK_PAGE_FAILED	-3
+#define MAP_STACK_PAGE_FAILED	-2
 
 /*!
  * \def MAP_VIDT_PAGE_FAILED
  * \brief Map VIDT page error code
  */
-#define MAP_VIDT_PAGE_FAILED	-4
+#define MAP_VIDT_PAGE_FAILED	-3
 
 /*
  * The minimal partition descriptor

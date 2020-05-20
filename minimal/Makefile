@@ -33,29 +33,29 @@
 
 include ../../toolchain.mk
 
-CFLAGS   = -m32
-CFLAGS  += -O0
-CFLAGS  += -c
-CFLAGS  += -fno-pie
-CFLAGS  += -nostdlib
-CFLAGS  += --freestanding
-CFLAGS  += -I$(LIBPIP)/include/
-CFLAGS  += -I$(LIBPIP)/arch/x86/include/
+CFLAGS     = -m32
+CFLAGS    += -O0
+CFLAGS    += -c
+CFLAGS    += -fno-pie
+CFLAGS    += -nostdlib
+CFLAGS    += --freestanding
+CFLAGS    += -I$(LIBPIP)/include/
+CFLAGS    += -I$(LIBPIP)/arch/x86/include/
 
-ASFLAGS  = $(CFLAGS)
+ASFLAGS    = $(CFLAGS)
 
-LDFLAGS  = -L$(LIBPIP)/lib
-LDFLAGS += -melf_i386
-LDFLAGS += -Tlink.ld
-LDFLAGS += -lpip
+LDFLAGS    = -L$(LIBPIP)/lib
+LDFLAGS   += -melf_i386
+LDFLAGS   += -Tlink.ld
+LDFLAGS   += -lpip
 
-ASSOURCES = $(wildcard *.S)
-CSOURCES  = $(wildcard *.c)
+ASSOURCES  = $(wildcard *.S)
+CSOURCES   = $(wildcard *.c)
 
-ASOBJ = $(ASSOURCES:.S=.o)
-COBJ  = $(CSOURCES:.c=.o)
+ASOBJ      = $(ASSOURCES:.S=.o)
+COBJ       = $(CSOURCES:.c=.o)
 
-EXEC = minimal.bin
+EXEC       = minimal.bin
 
 all: $(EXEC)
 	@echo Done.

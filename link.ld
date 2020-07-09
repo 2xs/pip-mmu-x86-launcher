@@ -37,6 +37,7 @@ SECTIONS
 {
 	.text 0x700000 :
 	{
+		__start_read_only = . ;
 		*(.text)
 		. = ALIGN(4K);
 	}
@@ -58,4 +59,5 @@ SECTIONS
 		*(.rodata)
 		. = ALIGN(4K);
 	}
+	__end_read_only = . ;
 }

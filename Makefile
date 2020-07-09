@@ -33,32 +33,31 @@
 
 include ../toolchain.mk
 
-CFLAGS   = -m32
-CFLAGS  += -c
-CFLAGS  += -I.
-CFLAGS  += -I./include
-CFLAGS  += --freestanding
-CFLAGS  += -O0
-CFLAGS  += -fno-pie
-CFLAGS  += -nostdlib
-CFLAGS  += -I$(LIBPIP)/include/
-CFLAGS  += -I$(LIBPIP)/arch/x86/include/
+CFLAGS     = -m32
+CFLAGS    += -c
+CFLAGS    += -I.
+CFLAGS    += -I./include
+CFLAGS    += --freestanding
+CFLAGS    += -O0
+CFLAGS    += -fno-pie
+CFLAGS    += -nostdlib
+CFLAGS    += -I$(LIBPIP)/include/
+CFLAGS    += -I$(LIBPIP)/arch/x86/include/
 
-ASFLAGS  = $(CFLAGS)
-CFLAGS  += $(MKARGS)
+ASFLAGS    = $(CFLAGS)
+CFLAGS    += $(MKARGS)
 
-LDFLAGS  = -L$(LIBPIP)/lib
-LDFLAGS += -melf_i386
-LDFLAGS += -e 0x700000
+LDFLAGS    = -L$(LIBPIP)/lib
+LDFLAGS   += -melf_i386
+LDFLAGS   += -e 0x700000
 
 CSOURCES   = $(wildcard *.c)
-CSOURCES  += $(wildcard bootstrap/*.c)
 ASSOURCES  = $(wildcard *.S)
 
-ASOBJ = $(ASSOURCES:.S=.o)
-COBJ  = $(CSOURCES:.c=.o)
+ASOBJ      = $(ASSOURCES:.S=.o)
+COBJ       = $(CSOURCES:.c=.o)
 
-EXEC = $(shell basename `pwd`).bin
+EXEC       = $(shell basename `pwd`).bin
 
 all: dep $(EXEC)
 	@echo Done.

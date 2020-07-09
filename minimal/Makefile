@@ -48,6 +48,7 @@ LDFLAGS  = -L$(LIBPIP)/lib
 LDFLAGS += -melf_i386
 LDFLAGS += -Tlink.ld
 LDFLAGS += -lpip
+LDFLAGS += -e 0x700000
 
 ASSOURCES = $(wildcard *.S)
 CSOURCES  = $(wildcard *.c)

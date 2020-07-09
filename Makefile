@@ -49,6 +49,7 @@ CFLAGS  += $(MKARGS)
 
 LDFLAGS  = -L$(LIBPIP)/lib
 LDFLAGS += -melf_i386
+LDFLAGS += -e 0x700000
 
 CSOURCES   = $(wildcard *.c)
 CSOURCES  += $(wildcard bootstrap/*.c)

@@ -65,15 +65,12 @@
 #define MAP_VIDT_PAGE_FAILED	-3
 
 /*
- * The minimal partition descriptor
- */
-uint32_t pd;
-
-/*
  * External symbols from link.ld file
  */
 extern void *_minimal_addr_start;
 extern void *_minimal_addr_end;
+extern void *__start_read_only;
+extern void *__end_read_only;
 
 /*!
  * \fn static void printBootInfo(pip_fpinfo* bootinfo)
@@ -83,9 +80,11 @@ extern void *_minimal_addr_end;
 static void printBootInfo(pip_fpinfo* bootinfo)
 {
 	printf("Magic number... 0x%x\n", bootinfo->magic);
-	printf("Memory start... 0x%x\n", bootinfo->membegin);
-	printf("Memory end... 0x%x\n", bootinfo->memend);
+	printf("Free memory start... 0x%x\n", bootinfo->membegin);
+	printf("Free memory end... 0x%x\n", bootinfo->memend);
 	printf("Pip revision... %s\n",   bootinfo->revision);
+	printf("Root partition start... 0x%x\n", &__start_read_only);
+	printf("Root partition end... 0x%x\n", &__end_read_only);
 	printf("Child address start... 0x%x\n", (uint32_t) &_minimal_addr_start);
 	printf("Child address end... 0x%x\n", (uint32_t) &_minimal_addr_end);
 }
@@ -98,56 +97,68 @@ static void printBootInfo(pip_fpinfo* bootinfo)
  * \param laddr The address where to load the partition
  * \return 1 in the case of a success, less than 0 in the case of an error
  */
-static int32_t bootstrapPartition(uint32_t base, uint32_t size, uint32_t laddr)
+static int32_t bootstrapPartition(uint32_t base, uint32_t size, uint32_t laddr, uint32_t *child_part_desc)
 {
-	uint32_t rtospd, rtossh1, rtossh2, rtossh3, stackPage, offset;
-	user_ctx_t *context, **vidtPage;
-
 	// Allocation of 5 memory pages for the creation of the child partition
-	pd      = (uint32_t) Pip_AllocPage();
-	rtospd  = (uint32_t) Pip_AllocPage();
-	rtossh1 = (uint32_t) Pip_AllocPage();
-	rtossh2 = (uint32_t) Pip_AllocPage();
-	rtossh3 = (uint32_t) Pip_AllocPage();
+	*child_part_desc   = (uint32_t) Pip_AllocPage();
+	printf("Child partition part desc : 0x%x\n", *child_part_desc);
+	uint32_t child_page_dir    = (uint32_t) Pip_AllocPage();
+	printf("Child partition page dir : 0x%x\n", child_page_dir);
+	uint32_t child_shadow1     = (uint32_t) Pip_AllocPage();
+	printf("Child partition shadow1 : 0x%x\n", child_shadow1);
+	uint32_t child_shadow2     = (uint32_t) Pip_AllocPage();
+	printf("Child partition shadow2 : 0x%x\n", child_shadow2);
+	uint32_t child_linked_list = (uint32_t) Pip_AllocPage();
+	printf("Child partition linked_list : 0x%x\n", child_linked_list);
 
 	// Creation of the partition
-	if (!Pip_CreatePartition(pd, rtospd, rtossh1, rtossh2, rtossh3))
+	if (!Pip_CreatePartition(*child_part_desc, child_page_dir, child_shadow1, child_shadow2, child_linked_list))
 		return CREATE_PARTITION_FAILED;
 
 	// Map each page of the child partition to the newly created partition
-	for (offset = 0; offset < size; offset += PAGE_SIZE)
+	for (uint32_t offset = 0; offset < size; offset += PAGE_SIZE)
 	{
-		if (!Pip_MapPageWrapper(base + offset, pd, laddr + offset))
+		if (!Pip_MapPageWrapper(base + offset, *child_part_desc, laddr + offset))
 			return MAP_CHILD_PAGE_FAILED;
 	}
 
 	// Allocation of a memory page for the child partition stack
-	stackPage = (uint32_t) Pip_AllocPage();
+	uint32_t stackPage = (uint32_t) Pip_AllocPage();
+	printf("Child stack : 0x%x\n", stackPage);
 
 	// Store the child's context at the top of the stack
-	context = (user_ctx_t *) (stackPage + PAGE_SIZE - sizeof(user_ctx_t));
+	user_ctx_t *context_paddr = (user_ctx_t *) (stackPage + PAGE_SIZE - sizeof(user_ctx_t));
+	printf("Child context : 0x%x - 0x%x\n", context_paddr, (uint32_t) context_paddr + sizeof(user_ctx_t));
 
 	// Creation of the child's context
-	context->valid    = 0;
-	context->eip      = laddr;
-	context->pipflags = 0;
-	context->eflags   = 0x202;
-	context->regs.ebp = STACK_TOP_ADDR + PAGE_SIZE;
-	context->regs.esp = context->regs.ebp - sizeof(user_ctx_t);
-	context->valid    = 1;
+	context_paddr->valid    = 0;
+	context_paddr->eip      = laddr;
+	context_paddr->pipflags = 0;
+	context_paddr->eflags   = 0x202;
+	context_paddr->regs.ebp = STACK_TOP_VADDR + PAGE_SIZE;
+	context_paddr->regs.esp = context_paddr->regs.ebp - sizeof(user_ctx_t);
+	context_paddr->valid    = 1;
 
 	// Map the stack page to the newly created partition
-	if (!Pip_MapPageWrapper(stackPage, pd, STACK_TOP_ADDR))
+	if (!Pip_MapPageWrapper(stackPage, *child_part_desc, STACK_TOP_VADDR))
 		return MAP_STACK_PAGE_FAILED;
 
 	// Allocation of a memory page for the child's VIDT
-	vidtPage = (user_ctx_t **) Pip_AllocPage();
+	user_ctx_t **vidtPage = (user_ctx_t **) Pip_AllocPage();
+	printf("Child VIDT : 0x%x\n", vidtPage);
 
-	// Store the pointer of the child context into the child's VIDT at index 0
-	vidtPage[0] = (user_ctx_t *) context->regs.esp;
+	// Store the pointer of the child context into the child's VIDT at index 0, 48, 49
+	user_ctx_t *ctx_vaddr = (user_ctx_t *) (STACK_TOP_VADDR +
+			PAGE_SIZE - sizeof(user_ctx_t));
+
+	vidtPage[0]  = ctx_vaddr;
+	vidtPage[48] = ctx_vaddr;
+	vidtPage[49] = ctx_vaddr;
+
+	printf("Child init context written at 0x%x\n", &vidtPage[0]);
 
 	// Map the VIDT page to the newly created partition
-	if (!Pip_MapPageWrapper((uint32_t) vidtPage, pd, VIDT_ADDR))
+	if (!Pip_MapPageWrapper((uint32_t) vidtPage, *child_part_desc, VIDT_VADDR))
 		return MAP_VIDT_PAGE_FAILED;
 
 	return 1;
@@ -166,7 +177,7 @@ void main(pip_fpinfo* bootinfo)
 	printf("The root partition is booting...\n");
 
 	// Retrieve the context from the stack top
-	setup_context = (user_ctx_t *) (STACK_TOP_ADDR - sizeof(user_ctx_t));
+	setup_context = (user_ctx_t *) (STACK_TOP_VADDR - sizeof(user_ctx_t));
 
 	// Store the pointer of the setup context into the VIDT
 	VIDT[32] = setup_context;
@@ -185,11 +196,9 @@ void main(pip_fpinfo* bootinfo)
 	}
 	printf("Done.\n");
 
-	printf("");printf("");
-
 	printBootInfo(bootinfo);
 
-	printf("Initializing the memory pages... ");
+	printf("\nInitializing the memory pages... ");
 	if (!Pip_InitPaging((void *) bootinfo->membegin, (void *) bootinfo->memend))
 	{
 		printf("Failed.\n");
@@ -198,7 +207,8 @@ void main(pip_fpinfo* bootinfo)
 	printf("Done.\n");
 
 	printf("Bootstraping the minimal partition... ");
-	if ((ret = bootstrapPartition(minimal_start, minimal_end - minimal_start, 0x700000)) < 1)
+	uint32_t child_part_desc;
+	if ((ret = bootstrapPartition(minimal_start, minimal_end - minimal_start, 0x700000, &child_part_desc)) < 1)
 	{
 		switch (ret)
 		{
@@ -224,7 +234,42 @@ void main(pip_fpinfo* bootinfo)
 	printf("It's all good. Now switching to the minimal partition...\n");
 	for (;;)
 	{
-		Pip_Yield(pd, 0, 49, 0, 0);
+		unsigned rc = Pip_Yield(child_part_desc, 0, 49, 0, 0);
+		switch(rc) {
+			case 1:
+				printf("Yield returned FAIL_INVALID_INT_LEVEL\n");
+				break;
+			case 2:
+				printf("Yield returned FAIL_INVALID_CTX_SAVE_INDEX\n");
+				break;
+			case 3:
+				printf("Yield returned FAIL_ROOT_CALLER\n");
+				break;
+			case 4:
+				printf("Yield returned FAIL_INVALID_CHILD\n");
+				break;
+			case 5:
+				printf("Yield returned FAIL_UNAVAILABLE_TARGET_VIDT\n");
+				break;
+			case 6:
+				printf("Yield returned FAIL_UNAVAILABLE_CALLER_VIDT\n");
+				break;
+			case 7:
+				printf("Yield returned FAIL_MASKED_INTERRUPT\n");
+				break;
+			case 8:
+				printf("Yield returned FAIL_UNAVAILABLE_TARGET_CTX\n");
+				break;
+			case 9:
+				printf("Yield returned FAIL_CALLER_CONTEXT_SAVE\n");
+				break;
+			case 0:
+				printf("Yield succeeded !\n");
+				break;
+			default:
+				printf("Yield returned an unexpected value : 0x%x\n", rc);
+				break;
+		}
 	}
 
 	// Should never be reached.

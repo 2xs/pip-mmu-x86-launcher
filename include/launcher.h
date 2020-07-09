@@ -38,19 +38,19 @@
  * \def BOOTINFO_ADDR
  * \brief The boot informations address
  */
-#define BOOTINFO_ADDR	0xffffc000
+#define BOOTINFO_VADDR		0xffffc000
 
 /*!
  * \def STACK_TOP_ADDR
  * \brief The stack top address
  */
-#define STACK_TOP_ADDR 	0xffffe000
+#define STACK_TOP_VADDR 	0xffffe000
 
 /*!
  * \def VIDT_ADDR
  * \brief The VIDT address
  */
-#define VIDT_ADDR	0xfffff000
+#define VIDT_VADDR		0xfffff000
 
 /*!
  * \def PAGE_SIZE
@@ -62,7 +62,7 @@
  * \def VIDT
  * \brief The VIDT of the current partition
  */
-#define VIDT		((user_ctx_t **) VIDT_ADDR)
+#define VIDT		((user_ctx_t **) VIDT_VADDR)
 
 /*!
  * \def PANIC()

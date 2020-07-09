@@ -33,8 +33,11 @@
 
 #include <pip/stdio.h>
 
-void main(void)
+void _entrypoint(void)
 {
 	printf("Hello World!\n");
-	for (;;);
+	for (;;)
+	{
+		printf("Woken up!\n");
+	}
 }

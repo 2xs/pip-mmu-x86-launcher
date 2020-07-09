@@ -43,9 +43,10 @@ SECTIONS
 	}
 	.minimal :
 	{
+		. = ALIGN(4K);
 		_minimal_addr_start = . ;
 		*(.minimal)
-		. = ALIGN(4K*64);
+		. = ALIGN(4K);
 		_minimal_addr_end = . ;
 	}
 	.bss :

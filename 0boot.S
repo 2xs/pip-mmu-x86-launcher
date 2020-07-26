@@ -32,10 +32,10 @@
 /*******************************************************************************/
 
 .section .text
-.extern main
+.extern _main
 
 boot:
 	push  %ebx
-	call  main
+	call  _main
 loop:
 	jmp   loop

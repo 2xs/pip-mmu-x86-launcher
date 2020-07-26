@@ -32,22 +32,22 @@
 /*******************************************************************************/
 
 OUTPUT_FORMAT(binary)
-ENTRY(main)
+ENTRY(_main)
 SECTIONS
 {
 	.text 0x700000 :
 	{
-		__start_read_only = . ;
+		__startReadOnlyAddress = . ;
 		*(.text)
 		. = ALIGN(4K);
 	}
 	.minimal :
 	{
 		. = ALIGN(4K);
-		_minimal_addr_start = . ;
+		__startChildAddress = . ;
 		*(.minimal)
 		. = ALIGN(4K);
-		_minimal_addr_end = . ;
+		__endChildAddress = . ;
 	}
 	.bss :
 	{
@@ -60,5 +60,5 @@ SECTIONS
 		*(.rodata)
 		. = ALIGN(4K);
 	}
-	__end_read_only = . ;
+	__endReadOnlyAddress = . ;
 }

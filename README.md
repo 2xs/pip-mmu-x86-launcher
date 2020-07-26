@@ -10,6 +10,8 @@ The project structure is the following:
 ```
 .
 ├── 0boot.S
+├── doc
+├── Doxyfile
 ├── include
 │   └── launcher.h
 ├── link.ld
@@ -29,6 +31,16 @@ and `main.c` files.
 
 The child partition code can be found in the `boot.S` and `main.c` files in the
 `minimal` directory.
+
+## Documentation
+
+You can generate the project documentation with the following command:
+
+```console
+$ make doc
+```
+
+You'll find it in the `doc` directory.
 
 ## Useful commands for debugging
 

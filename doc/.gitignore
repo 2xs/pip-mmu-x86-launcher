@@ -31,53 +31,5 @@
 #  knowledge of the CeCILL license and that you accept its terms.             #
 ###############################################################################
 
-include ../toolchain.mk
-
-CFLAGS     = -m32
-CFLAGS    += -c
-CFLAGS    += -I.
-CFLAGS    += -I./include
-CFLAGS    += --freestanding
-CFLAGS    += -O0
-CFLAGS    += -fno-pie
-CFLAGS    += -nostdlib
-CFLAGS    += -I$(LIBPIP)/include/
-CFLAGS    += -I$(LIBPIP)/arch/x86/include/
-
-ASFLAGS    = $(CFLAGS)
-CFLAGS    += $(MKARGS)
-
-LDFLAGS    = -L$(LIBPIP)/lib
-LDFLAGS   += -melf_i386
-LDFLAGS   += -e 0x700000
-
-CSOURCES   = $(wildcard *.c)
-ASSOURCES  = $(wildcard *.S)
-
-ASOBJ      = $(ASSOURCES:.S=.o)
-COBJ       = $(CSOURCES:.c=.o)
-
-EXEC       = $(shell basename `pwd`).bin
-
-all: dep $(EXEC)
-	@echo Done.
-
-clean:
-	rm -f $(ASOBJ) $(COBJ) $(EXEC)
-
-$(EXEC): $(ASOBJ) $(COBJ)
-	$(LD) $(LDFLAGS) $^ -Tlink.ld -o $@ -lpip
-
-dep:
-	make -C minimal clean all
-
-doc:
-	doxygen
-
-%.o: %.S
-	$(AS) $(ASFLAGS) $< -o $@
-
-%.o: %.c
-	$(CC) $(CFLAGS) $< -o $@
-
-.PHONY: dep doc
+*
+!.gitignore

@@ -31,11 +31,24 @@
 /*  knowledge of the CeCILL license and that you accept its terms.             */
 /*******************************************************************************/
 
+/*!
+ * \file
+ * This file contains the child partition source code
+ */
+
 #include <pip/stdio.h>
 
-void _entrypoint(void)
+/*!
+ * \fn void _main(void)
+ * \brief The child partition entry point called by the boot.S file
+ * \warning Do not name the entry point "main" because gcc generates an
+ *          erroneous machine code: it tries to retrieve the arguments argc
+ *          and argv even with the parameters --freestanding and -nostdlib
+ */
+void _main(void)
 {
 	printf("Hello World!\n");
+
 	for (;;)
 	{
 		printf("Woken up!\n");

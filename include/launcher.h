@@ -31,38 +31,109 @@
 /*  knowledge of the CeCILL license and that you accept its terms.             */
 /*******************************************************************************/
 
+/*!
+ * \file
+ * This file contains the constant definition used by the root partition
+ */
+
 #ifndef __DEF_LAUNCHER_H__
 #define __DEF_LAUNCHER_H__
 
 /*!
- * \def BOOTINFO_ADDR
+ * \def FAIL_CREATE_PARTITION
+ * \brief Create partition error code
+ */
+#define FAIL_CREATE_PARTITION	 1
+
+/*!
+ * \def FAIL_MAP_CHILD_PAGE
+ * \brief Map child page error code
+ */
+#define FAIL_MAP_CHILD_PAGE	 2
+
+/*!
+ * \def FAIL_MAP_STACK_PAGE
+ * \brief Map stack page error code
+ */
+#define FAIL_MAP_STACK_PAGE	3
+
+/*!
+ * \def FAIL_MAP_VIDT_PAGE
+ * \brief Map VIDT page error code
+ */
+#define FAIL_MAP_VIDT_PAGE	4
+
+/*!
+ * \def FAIL_INVALID_INT_LEVEL
+ * \brief Invalid interrupt level error code
+ */
+#define FAIL_INVALID_INT_LEVEL		1
+
+/*!
+ * \def FAIL_INVALID_CTX_SAVE_INDEX
+ * \brief Invalid context save index error code
+ */
+#define FAIL_INVALID_CTX_SAVE_INDEX	2
+
+/*!
+ * \def FAIL_ROOT_CALLER
+ * \brief Root caller error code
+ */
+#define FAIL_ROOT_CALLER		3
+
+/*!
+ * \def FAIL_INVALID_CHILD
+ * \brief Invalid child error code
+ */
+#define FAIL_INVALID_CHILD		4
+
+/*!
+ * \def FAIL_UNAVAILABLE_TARGET_VIDT
+ * \brief Unavailable VIDT target error code
+ */
+#define FAIL_UNAVAILABLE_TARGET_VIDT	5
+
+/*!
+ * \def FAIL_UNAVAILABLE_CALLER_VIDT
+ * \brief Unavailable VIDT caller error code
+ */
+#define FAIL_UNAVAILABLE_CALLER_VIDT	6
+
+/*!
+ * \def FAIL_MASKED_INTERRUPT
+ * \brief Masked interrupt error code
+ */
+#define FAIL_MASKED_INTERRUPT		7
+
+/*!
+ * \def FAIL_UNAVAILABLE_TARGET_CTX
+ * \brief Unavailable target context error code
+ */
+#define FAIL_UNAVAILABLE_TARGET_CTX	8
+
+/*!
+ * \def FAIL_CALLER_CONTEXT_SAVE
+ * \brief Caller context save error code
+ */
+#define FAIL_CALLER_CONTEXT_SAVE	9
+
+/*!
+ * \def BOOTINFO_VADDR
  * \brief The boot informations address
  */
-#define BOOTINFO_VADDR		0xffffc000
+#define BOOTINFO_VADDR	0xffffc000
 
 /*!
- * \def STACK_TOP_ADDR
+ * \def STACK_TOP_VADDR
  * \brief The stack top address
  */
-#define STACK_TOP_VADDR 	0xffffe000
+#define STACK_TOP_VADDR 0xffffe000
 
 /*!
- * \def VIDT_ADDR
- * \brief The VIDT address
+ * \def LOAD_VADDRESS
+ * \brief The virtual address where to load the child
  */
-#define VIDT_VADDR		0xfffff000
-
-/*!
- * \def PAGE_SIZE
- * \brief The page size
- */
-#define PAGE_SIZE	4096
-
-/*!
- * \def VIDT
- * \brief The VIDT of the current partition
- */
-#define VIDT		((user_ctx_t **) VIDT_VADDR)
+#define LOAD_VADDRESS	0x700000
 
 /*!
  * \def PANIC()
@@ -73,35 +144,5 @@
 		printf("Panic!\n");	\
 		for (;;);		\
 	} while (0)
-
-/*!
- * \struct pushad_regs_t
- * \brief Registers structure for x86
- */
-typedef struct pushad_regs_s
-{
-	uint32_t edi;       //!< General register EDI
-	uint32_t esi;       //!< General register ESI
-	uint32_t ebp;       //!< Base pointer
-	uint32_t esp;       //!< Stack pointer
-	uint32_t ebx;       //!< General register EBX
-	uint32_t edx;       //!< General register EDX
-	uint32_t ecx;       //!< General register ECX
-	uint32_t eax;       //!< General register EAX
-} pushad_regs_t;
-
-/*!
- * \struct user_ctx_t
- * \brief User saved context
- */
-typedef struct user_ctx_s
-{
-	uint32_t eip;       //!< Extended instruction pointer
-	uint32_t pipflags;  //!< Flags used by PIP
-	uint32_t eflags;    //!< Status register
-	pushad_regs_t regs; //!< General-purpose registers
-	uint32_t valid;     //!< Structure validity: 1 valid, 0 invalid
-	uint32_t nfu[4];    //!< Unused
-} user_ctx_t;
 
 #endif /* __DEF_LAUNCHER_H__ */

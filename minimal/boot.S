@@ -33,9 +33,9 @@
 
 .section .text
 .global boot
-.extern _entrypoint
+.extern _main
 
 boot:
-	call  _entrypoint
+	call  _main
 loop:
 	jmp   loop

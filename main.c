@@ -87,8 +87,8 @@ uint32_t descChild;
 static uint32_t bootstrapPartition(uint32_t base, uint32_t size,
 		uint32_t loadAddress);
 static void printBootInformations(pip_fpinfo* bootInformations);
-static void do_bootstrap(void);
-static void do_yield(void);
+static void doBootstrap(void);
+static void doYield(void);
 
 /*!
  * \fn INTERRUPT_HANDLER(timerHandler)
@@ -99,7 +99,7 @@ INTERRUPT_HANDLER(timerHandler)
 	printf("A timer interruption was triggered ...\n");
 
 	// Yield to the child partition
-	do_yield();
+	doYield();
 
 	// Should never be reached
 	PANIC();
@@ -155,10 +155,10 @@ void _main(pip_fpinfo* bootInformations)
 	INTERRUPT_REGISTER(33, keyboardHandler);
 
 	printf("Bootstraping the minimal partition ...");
-	do_bootstrap();
+	doBootstrap();
 
 	printf("Yielding to the child partition ...\n");
-	do_yield();
+	doYield();
 
 	// Should never be reached.
 	PANIC();
@@ -257,10 +257,10 @@ static uint32_t bootstrapPartition(uint32_t base, uint32_t size,
 }
 
 /*!
- * \fn static void do_bootstrap(void)
+ * \fn static void doBootstrap(void)
  * \brief Do the bootstrap of the child partition and abort if an error occured.
  */
-static void do_bootstrap(void)
+static void doBootstrap(void)
 {
 	// Retrieve the start and end address of the child partition
 	uint32_t startChildAddress = (uint32_t) &__startChildAddress;
@@ -298,10 +298,10 @@ static void do_bootstrap(void)
 }
 
 /*!
- * \fn static void do_yield(void)
+ * \fn static void doYield(void)
  * \brief Do the yield to the child partition and abort if an error occured.
  */
-static void do_yield(void)
+static void doYield(void)
 {
 	uint32_t ret = Pip_Yield(descChild, 0, 49, 0, 0);
 

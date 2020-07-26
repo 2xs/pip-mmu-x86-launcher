@@ -81,7 +81,11 @@ extern void *__endChildAddress;
  */
 uint32_t descChild;
 
-static uint32_t bootstrapPartition(uint32_t base, uint32_t size, uint32_t loadAddress);
+/*
+ * Function prototypes
+ */
+static uint32_t bootstrapPartition(uint32_t base, uint32_t size,
+		uint32_t loadAddress);
 static void printBootInformations(pip_fpinfo* bootInformations);
 static void do_bootstrap(void);
 static void do_yield(void);

@@ -91,10 +91,9 @@ static void doBootstrap(void);
 static void doYield(void);
 
 /*!
- * \fn INTERRUPT_HANDLER(timerHandler)
  * \brief Handler for the timer interrupt
  */
-INTERRUPT_HANDLER(timerHandler)
+void timerHandler(void)
 {
 	printf("A timer interruption was triggered ...\n");
 
@@ -106,10 +105,9 @@ INTERRUPT_HANDLER(timerHandler)
 }
 
 /*!
- * \fn INTERRUPT_HANDLER(keyboardHandler)
  * \brief Handler for the keyboard interrupt
  */
-INTERRUPT_HANDLER(keyboardHandler)
+void keyboardHandler(void)
 {
 	printf("A keyboard interruption was triggered ...\n");
 	for (;;);
@@ -150,12 +148,16 @@ void _main(pip_fpinfo* bootInformations)
 		PANIC();
 	}
 
+	// Allocate two interrupt contexts
+	user_ctx_t *timerHandlerContext    = Pip_AllocContext();
+	user_ctx_t *keyboardHandlerContext = Pip_AllocContext();
+
 	// Allocate a page for the handler stack
 	uint32_t handlerStackAddress = (uint32_t) Pip_AllocPage();
 
-	// Interrupt handler registration
-	INTERRUPT_REGISTER(32, timerHandler, handlerStackAddress, 0);
-	INTERRUPT_REGISTER(33, keyboardHandler, handlerStackAddress, 0);
+	// Registration of the interrupt handler
+	Pip_RegisterInterrupt(timerHandlerContext, 32, (uint32_t) timerHandler, handlerStackAddress, 0);
+	Pip_RegisterInterrupt(keyboardHandlerContext, 33, (uint32_t) keyboardHandler, handlerStackAddress, 0);
 
 	printf("Bootstraping the minimal partition ...");
 	doBootstrap();

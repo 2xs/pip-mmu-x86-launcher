@@ -98,10 +98,6 @@ INTERRUPT_HANDLER(timerHandler)
 {
 	printf("A timer interruption was triggered ...\n");
 
-	uint32_t a = 1, b = 2, c = 3, d = 5, e = 6;
-
-	printf("a = %d\nb = %d\nc = %d\nd = %d\ne = %d\n", a, b, c, d, e);
-
 	// Yield to the child partition
 	doYield();
 

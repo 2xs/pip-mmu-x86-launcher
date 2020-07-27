@@ -156,8 +156,11 @@ void _main(pip_fpinfo* bootInformations)
 	uint32_t handlerStackAddress = (uint32_t) Pip_AllocPage();
 
 	// Registration of the interrupt handler
-	Pip_RegisterInterrupt(timerHandlerContext, 32, (uint32_t) timerHandler, handlerStackAddress, 0);
-	Pip_RegisterInterrupt(keyboardHandlerContext, 33, (uint32_t) keyboardHandler, handlerStackAddress, 0);
+	Pip_RegisterInterrupt(timerHandlerContext, 32, (uint32_t) timerHandler,
+			handlerStackAddress, 0);
+
+	Pip_RegisterInterrupt(keyboardHandlerContext, 33, (uint32_t) keyboardHandler,
+			handlerStackAddress, 0);
 
 	printf("Bootstraping the minimal partition ...");
 	doBootstrap();

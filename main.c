@@ -98,6 +98,10 @@ INTERRUPT_HANDLER(timerHandler)
 {
 	printf("A timer interruption was triggered ...\n");
 
+	uint32_t a = 1, b = 2, c = 3, d = 5, e = 6;
+
+	printf("a = %d\nb = %d\nc = %d\nd = %d\ne = %d\n", a, b, c, d, e);
+
 	// Yield to the child partition
 	doYield();
 
@@ -150,9 +154,12 @@ void _main(pip_fpinfo* bootInformations)
 		PANIC();
 	}
 
+	// Allocate a page for the handler stack
+	uint32_t handlerStackAddress = (uint32_t) Pip_AllocPage();
+
 	// Interrupt handler registration
-	INTERRUPT_REGISTER(32, timerHandler);
-	INTERRUPT_REGISTER(33, keyboardHandler);
+	INTERRUPT_REGISTER(32, timerHandler, handlerStackAddress, 0);
+	INTERRUPT_REGISTER(33, keyboardHandler, handlerStackAddress, 0);
 
 	printf("Bootstraping the minimal partition ...");
 	doBootstrap();

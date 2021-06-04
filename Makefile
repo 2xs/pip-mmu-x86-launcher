@@ -80,4 +80,4 @@ doc:
 %.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
-.PHONY: dep doc
+.PHONY: all clean dep doc

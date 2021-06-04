@@ -72,3 +72,5 @@ $(EXEC): $(ASOBJ) $(COBJ)
 
 clean:
 	rm -f $(ASOBJ) $(COBJ) $(EXEC)
+
+.PHONY: all clean

@@ -49,6 +49,7 @@
 #include <pip/paging.h>
 #include <pip/vidt.h>
 #include <pip/api.h>
+#include <pip/wrappers.h>
 
 #include "launcher.h"
 
@@ -201,6 +202,8 @@ static void printBootInformations(pip_fpinfo* bootInformations)
 static uint32_t bootstrapPartition(uint32_t base, uint32_t size,
 		uint32_t loadAddress)
 {
+	enum map_page_wrapper_ret_e map_page_rcode;
+
 	// Allocate 5 memory pages in order to create a child partition
 	descChild                = (uint32_t) Pip_AllocPage();
 	uint32_t pdChild         = (uint32_t) Pip_AllocPage();
@@ -218,10 +221,22 @@ static uint32_t bootstrapPartition(uint32_t base, uint32_t size,
 	// Map each page of the child partition to the newly created partition
 	for (uint32_t offset = 0; offset < size; offset += PAGE_SIZE)
 	{
-		if (!Pip_MapPageWrapper(base + offset, descChild,
-				loadAddress + offset))
-		{
-			return FAIL_MAP_CHILD_PAGE;
+		map_page_rcode = Pip_MapPageWrapper(base + offset, descChild,
+                                                    loadAddress + offset);
+		switch (map_page_rcode) {
+			case FAIL_ALLOC_PAGE:
+				printf("MapPageWrapper failed while allocating a page\n");
+				return FAIL_MAP_CHILD_PAGE;
+			case FAIL_PREPARE:
+				printf("MapPageWrapper failed while trying to give pages to the kernel for memory data structures\n");
+				return FAIL_MAP_CHILD_PAGE;
+			case FAIL_ADD_VADDR:
+				printf("MapPageWrapper failed while trying to add a memory page to the child\n");
+				return FAIL_MAP_CHILD_PAGE;
+			case SUCCESS :
+				break;
+			default:
+				printf("Unknown MapPageWrapper return code\n");
 		}
 	}
 
@@ -246,8 +261,22 @@ static uint32_t bootstrapPartition(uint32_t base, uint32_t size,
 	contextPAddr->valid    = 1;
 
 	// Map the stack page to the newly created partition
-	if (!Pip_MapPageWrapper(stackPage, descChild, STACK_TOP_VADDR))
-		return FAIL_MAP_STACK_PAGE;
+        map_page_rcode = Pip_MapPageWrapper(stackPage, descChild, STACK_TOP_VADDR);
+        switch (map_page_rcode) {
+                case FAIL_ALLOC_PAGE:
+                        printf("MapPageWrapper failed while allocating a page\n");
+                        return FAIL_MAP_STACK_PAGE;
+                case FAIL_PREPARE:
+                        printf("MapPageWrapper failed while trying to give pages to the kernel for memory data structures\n");
+                        return FAIL_MAP_STACK_PAGE;
+                case FAIL_ADD_VADDR:
+                        printf("MapPageWrapper failed while trying to add a memory page to the child\n");
+                        return FAIL_MAP_STACK_PAGE;
+                case SUCCESS :
+                        break;
+                default:
+                        printf("Unknown MapPageWrapper return code\n");
+        }
 
 	// Allocate a memory page for the child's VIDT
 	user_ctx_t **vidtPage = (user_ctx_t**) Pip_AllocPage();
@@ -258,8 +287,22 @@ static uint32_t bootstrapPartition(uint32_t base, uint32_t size,
 	vidtPage[49] = contextVAddr;
 
 	// Map the VIDT page to the newly created partition
-	if (!Pip_MapPageWrapper((uint32_t) vidtPage, descChild, VIDT_VADDR))
-		return FAIL_MAP_VIDT_PAGE;
+        map_page_rcode = Pip_MapPageWrapper((uint32_t) vidtPage, descChild, VIDT_VADDR);
+        switch (map_page_rcode) {
+                case FAIL_ALLOC_PAGE:
+                        printf("MapPageWrapper failed while allocating a page\n");
+                        return FAIL_MAP_VIDT_PAGE;
+                case FAIL_PREPARE:
+                        printf("MapPageWrapper failed while trying to give pages to the kernel for memory data structures\n");
+                        return FAIL_MAP_VIDT_PAGE;
+                case FAIL_ADD_VADDR:
+                        printf("MapPageWrapper failed while trying to add a memory page to the child\n");
+                        return FAIL_MAP_VIDT_PAGE;
+                case SUCCESS :
+                        break;
+                default:
+                        printf("Unknown MapPageWrapper return code\n");
+        }
 
 	return 0;
 }

@@ -134,7 +134,7 @@ void _main(pip_fpinfo* bootInformations)
 	VIDT[48] = rootPartitionContext;
 	VIDT[49] = rootPartitionContext;
 
-	printf("Checking the boot information integrity ...");
+	printf("Checking the boot information integrity ...\n");
 	if (bootInformations->magic != FPINFO_MAGIC)
 	{
 		PANIC();
@@ -142,7 +142,7 @@ void _main(pip_fpinfo* bootInformations)
 
 	printBootInformations(bootInformations);
 
-	printf("Initializing the memory pages... ");
+	printf("Initializing the memory pages ...\n");
 	if (!Pip_InitPaging(bootInformations->membegin,
 			bootInformations->memend))
 	{

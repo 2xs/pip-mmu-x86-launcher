@@ -96,7 +96,7 @@ static void doYield(void);
  */
 void timerHandler(void)
 {
-	printf("A timer interruption was triggered ...\n");
+	printf("A timer interrupt was triggered ...\n");
 
 	// Yield to the child partition
 	doYield();
@@ -110,7 +110,7 @@ void timerHandler(void)
  */
 void keyboardHandler(void)
 {
-	printf("A keyboard interruption was triggered ...\n");
+	printf("A keyboard interrupt was triggered ...\n");
 	for (;;);
 }
 

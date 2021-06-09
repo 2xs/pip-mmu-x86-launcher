@@ -127,7 +127,7 @@ void _main(pip_fpinfo* bootInformations)
 	printf("The root partition is booting ...\n");
 
 	// Retrieve the root partition context from the stack top
-	user_ctx_t *rootPartitionContext = (user_ctx_t*) (STACK_TOP_VADDR -
+	user_ctx_t *rootPartitionContext = (user_ctx_t*) (STACK_TOP_VADDR + PAGE_SIZE -
 			sizeof(user_ctx_t));
 
 	// Save the context pointer of the root partition into the VIDT
